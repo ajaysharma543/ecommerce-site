@@ -15,8 +15,7 @@ export class AuthService {
   }
 
   async Createuser({ email, password, name, phone }) {
-    try {
-      const userAccount = await this.account.create(ID.unique(), email, password, name);
+          const userAccount = await this.account.create(ID.unique(), email, password, name);
       if (userAccount) {
         await this.login({ email, password });
         await this.database.createDocument(
@@ -33,9 +32,6 @@ export class AuthService {
         );
       }
       return userAccount;
-    } catch (error) {
-      throw error;
-    }
   }
   async getUserDataById(userId) {
   try {
