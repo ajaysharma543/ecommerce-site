@@ -4,6 +4,7 @@ import authservice from "../../appwrite/auth";
 
 const Layout = ({ Logouthandler }) => {
   const [userData, setUserData] = useState(null);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchUsers = async () => {
@@ -13,14 +14,24 @@ const Layout = ({ Logouthandler }) => {
         setUserData(userDetails);
       } catch (error) {
         console.error("Failed to fetch user data:", error);
+      } finally {
+        setLoading(false);
       }
     };
 
     fetchUsers();
   }, []);
 
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-[#111827]">
+        <div className="text-white text-xl animate-pulse">Loading...</div>
+      </div>
+    );
+  }
+
   return (
-    <div className="min-h-screen bg-[#111827] ">
+    <div className="min-h-screen bg-[#111827]">
       <header className="w-full flex flex-col sm:flex-row justify-between items-center bg-[#1f2937] p-4 shadow-md">
         <div className="text-white text-lg sm:text-xl font-semibold text-center sm:text-left mb-2 sm:mb-0">
           Welcome to the Admin Panel{userData?.name ? `, ${userData.name}` : ""}

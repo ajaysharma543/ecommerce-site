@@ -8,21 +8,27 @@ import { setUser } from '../../store/auth';
 
 function Usersignup({ onswitch }) {
   const [error, setError] = useState('');
+  const [loading, setLoading] = useState(false);
+
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  
+
   const {
     register,
     handleSubmit,
-    formState: { errors, isSubmitting }
+    formState: { errors }
   } = useForm();
 
   const onSubmit = async ({ name, email, password, phone }) => {
     setError('');
+    setLoading(true);
+
     try {
       const session = await authservice.Createuser({ name, email, password, phone });
+
       if (session) {
         const userData = await authservice.getCurrentUser();
+
         if (userData) {
           dispatch(setUser(userData));
           navigate('/userlogin', { replace: true });
@@ -30,6 +36,8 @@ function Usersignup({ onswitch }) {
       }
     } catch (err) {
       setError(err?.message || 'Signup failed. Please try again.');
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -37,10 +45,11 @@ function Usersignup({ onswitch }) {
     <section className="flex items-center w-full justify-center">
       <div className="w-[300px] border-2 px-4 py-6 my-20 rounded-2xl border-white">
         <h2 className="text-2xl font-bold text-center text-white">Signup</h2>
-        
+
         {error && <p className="text-red-500 mt-3 text-center">{error}</p>}
 
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-3 mt-4">
+
           <InputBox
             icon="fa-solid fa-user"
             type="text"
@@ -82,18 +91,14 @@ function Usersignup({ onswitch }) {
           />
           {errors.password && <p className="text-red-400 text-xs">{errors.password.message}</p>}
 
-          <div className="flex justify-between mt-2 text-white text-sm">
-            <label>
-              <input type="checkbox" className="mr-1" /> Remember me
-            </label>
-          </div>
-
           <button
             type="submit"
-            disabled={isSubmitting}
-            className="bg-blue-600 mt-4 h-[35px] w-full rounded-2xl text-white font-semibold hover:bg-blue-700 transition-all"
+            disabled={loading}
+            className={`mt-4 h-[35px] w-full rounded-2xl text-white font-semibold transition-all
+              ${loading ? "bg-gray-500 cursor-not-allowed" : "bg-blue-600 hover:bg-blue-700"}
+            `}
           >
-            {isSubmitting ? "Signing up..." : "Signup"}
+            {loading ? "Loading..." : "Signup"}
           </button>
 
           <p className="text-white text-sm text-center mt-2">
@@ -106,6 +111,7 @@ function Usersignup({ onswitch }) {
               Login
             </button>
           </p>
+
         </form>
       </div>
     </section>
