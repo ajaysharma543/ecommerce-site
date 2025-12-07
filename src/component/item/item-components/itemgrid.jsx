@@ -1,5 +1,5 @@
 import React from "react";
-import ItemCard from "../item components/itemcard";
+import ItemCard from "./itemcard";
 
 function ItemGrid({ posts, onDelete }) {
   return (

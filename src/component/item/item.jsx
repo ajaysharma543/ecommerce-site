@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import ItemGrid from "../../component/item/item components/itemgrid";
+import ItemGrid from "./item-components/itemgrid";
 import service from "../../appwrite/config";
 import { Query } from "appwrite";
 
