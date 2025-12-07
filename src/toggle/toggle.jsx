@@ -25,7 +25,7 @@ function Toggle() {
   };
 
   return (
-    <div className="flex justify-center">
+    <div className="flex justify-center bg-black">
       {isLogin ? (
         <Login onswitch={handleSwitch} />
       ) : (

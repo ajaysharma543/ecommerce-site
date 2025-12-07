@@ -46,7 +46,7 @@ const Login = ({ onswitch }) => {
   };
 
   return (
-    <section className="flex items-center w-full justify-center min-h-screen bg-gray-900">
+    <section className="flex items-center w-full justify-center min-h-screen">
       <div className="w-[300px] border-2 px-4 py-5 rounded-2xl border-white bg-gray-800">
         <h2 className="text-2xl font-bold text-center text-white mb-4">Login</h2>
 
