@@ -12,7 +12,7 @@ function Home() {
    <>
     <HeroSection />
     <Aboutsection />
-    <Categorysection />
+    {/* <Categorysection /> */}
     <CategoryProductGrid />
     <CtaSection />
     <ContactForm />

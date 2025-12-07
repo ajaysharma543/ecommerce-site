@@ -106,7 +106,7 @@ function Usersignup({ onswitch }) {
             <button
               type="button"
               onClick={() => onswitch?.('login')}
-              className="underline font-semibold ml-1"
+              className="underline font-semibold ml-1 cursor-pointer"
             >
               Login
             </button>
