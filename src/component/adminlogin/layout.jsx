@@ -24,14 +24,14 @@ const Layout = ({ Logouthandler }) => {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-[#111827]">
+      <div className="min-h-screen flex items-center justify-center bg-black">
         <div className="text-white text-xl animate-pulse">Loading...</div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-[#111827]">
+    <div className="min-h-screen bg-black">
       <header className="w-full flex flex-col sm:flex-row justify-between items-center bg-[#1f2937] p-4 shadow-md">
         <div className="text-white text-lg sm:text-xl font-semibold text-center sm:text-left mb-2 sm:mb-0">
           Welcome to the Admin Panel{userData?.name ? `, ${userData.name}` : ""}
@@ -44,7 +44,7 @@ const Layout = ({ Logouthandler }) => {
         </button>
       </header>
 
-      <main className="bg-[#111827] p-8 min-h-[calc(100vh-72px)]">
+      <main className="bg-black p-8 min-h-[calc(100vh-72px)]">
         <Outlet />
       </main>
     </div>

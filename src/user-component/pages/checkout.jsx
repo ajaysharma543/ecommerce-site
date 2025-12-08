@@ -118,7 +118,7 @@ const totalPrice = cartItems
                     name="fullName"
                     value={formData.fullName}
                     onChange={handleInputChange}
-                    className="w-full p-2 border border-gray-300 text-black rounded-md focus:outline-none focus:ring-2 focus:ring-[#b79141]"
+                    className="w-full p-2 border border-gray-300 text-white rounded-md focus:outline-none focus:ring-2 focus:ring-[#b79141]"
                     required
                   />
                 </div>
@@ -129,7 +129,7 @@ const totalPrice = cartItems
                     name="address"
                     value={formData.address}
                     onChange={handleInputChange}
-                    className="w-full p-2 border border-gray-300 text-black rounded-md focus:outline-none focus:ring-2 focus:ring-[#b79141]"
+                    className="w-full p-2 border border-gray-300 text-white rounded-md focus:outline-none focus:ring-2 focus:ring-[#b79141]"
                     required
                   />
                 </div>
@@ -141,7 +141,7 @@ const totalPrice = cartItems
                       name="city"
                       value={formData.city}
                       onChange={handleInputChange}
-                      className="w-full p-2 border border-gray-300 text-black rounded-md focus:outline-none focus:ring-2 focus:ring-[#b79141]"
+                      className="w-full p-2 border border-gray-300 text-white rounded-md focus:outline-none focus:ring-2 focus:ring-[#b79141]"
                       required
                     />
                   </div>
@@ -152,7 +152,7 @@ const totalPrice = cartItems
                       name="postalCode"
                       value={formData.postalCode}
                       onChange={handleInputChange}
-                      className="w-full p-2 border border-gray-300 text-black rounded-md focus:outline-none focus:ring-2 focus:ring-[#b79141]"
+                      className="w-full p-2 border border-gray-300 text-white rounded-md focus:outline-none focus:ring-2 focus:ring-[#b79141]"
                       required
                     />
                   </div>
@@ -163,7 +163,7 @@ const totalPrice = cartItems
                       name="country"
                       value={formData.country}
                       onChange={handleInputChange}
-                      className="w-full p-2 border border-gray-300 text-black rounded-md focus:outline-none focus:ring-2 focus:ring-[#b79141]"
+                      className="w-full p-2 border border-gray-300 text-white rounded-md focus:outline-none focus:ring-2 focus:ring-[#b79141]"
                       required
                     />
                   </div>
