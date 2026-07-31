@@ -8,103 +8,154 @@ import { setUser } from '../../store/auth';
 
 const Login = ({ onswitch }) => {
   const [error, setError] = useState("");
+  const [errorKey, setErrorKey] = useState(0);
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const { register, handleSubmit, formState: { errors } } = useForm();
 
-  const handleLogin = async (data) => {
-    try {
-      setLoading(true);
-      setError("");
+  const showError = (msg) => {
+    setError(msg);
+    setErrorKey((k) => k + 1); // forces the shake animation to replay
+  };
 
+  const handleLogin = async (data) => {
+    setError("");
+    setLoading(true);
+
+    try {
       const session = await authservice.login(data);
 
-      if (session) {
-        const user = await authservice.getCurrentUser();
-        const dbUser = await authservice.getUserDataByEmail(user.email);
+      if (!session) {
+        showError("Invalid email or password.");
+        return;
+      }
 
-        if (!dbUser) {
-          setError("User not found in database.");
-          setLoading(false);
-          return;
-        }
+      const user = await authservice.getCurrentUser();
+      const dbUser = await authservice.getUserDataByEmail(user.email);
 
-        dispatch(setUser(user));
+      if (!dbUser) {
+        showError("We couldn't find an account for this user.");
+        return;
+      }
 
-        if (dbUser.role === "admin") {
-          navigate("/add", { replace: true });
-        } else {
-          navigate("/userlogin", { replace: true });
-        }
+      dispatch(setUser(user));
+
+      if (dbUser.role === "admin") {
+        navigate("/add", { replace: true });
+      } else {
+        navigate("/userlogin", { replace: true });
       }
     } catch (err) {
-      setError(err.message || "Login failed");
+      showError(err?.message || "Login failed. Please check your details and try again.");
     } finally {
-      setLoading(false); // Always stop loading
+      setLoading(false);
     }
   };
 
+  const fields = [
+    {
+      icon: "fa-solid fa-envelope",
+      type: "email",
+      label: "Email",
+      error: errors.email?.message,
+      reg: register("email", {
+        required: "Email is required",
+        pattern: {
+          value: /^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,3})+$/,
+          message: "Enter a valid email",
+        },
+      }),
+    },
+    {
+      icon: "fa-solid fa-lock",
+      type: "password",
+      label: "Password",
+      error: errors.password?.message,
+      reg: register("password", { required: "Password is required" }),
+    },
+  ];
+
   return (
-    <section className="flex items-center w-full justify-center min-h-screen">
-      <div className="w-[300px] border-2 px-4 py-5 rounded-2xl border-white bg-gray-800">
-        <h2 className="text-2xl font-bold text-center text-white mb-4">Login</h2>
+    <section className="w-full px-6 py-8">
+      <h2 className="text-xl font-bold text-white text-center mb-1 animate-fade-slide-up" style={{ animationDelay: '0.05s' }}>
+        Welcome back
+      </h2>
+      <p className="text-white/40 text-xs text-center mb-6 animate-fade-slide-up" style={{ animationDelay: '0.1s' }}>
+        Sign in to continue
+      </p>
 
-        {error && <p className="text-red-600 text-center mb-4">{error}</p>}
+      {error && (
+        <div
+          key={errorKey}
+          className="mb-4 rounded-lg border border-red-500/30 bg-red-500/10 px-3 py-2 animate-shake"
+        >
+          <p className="text-red-400 text-sm text-center">{error}</p>
+        </div>
+      )}
 
-        <form onSubmit={handleSubmit(handleLogin)} autoComplete="off">
+      <form onSubmit={handleSubmit(handleLogin)} autoComplete="off" className="space-y-5">
+        {fields.map((f, i) => (
           <InputBox
-            icon="fa-solid fa-user"
-            type="email"
-            label="Email"
+            key={f.label}
+            icon={f.icon}
+            type={f.type}
+            label={f.label}
             autoComplete="off"
-            {...register("email", {
-              required: "Email is required",
-              pattern: {
-                value: /^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,3})+$/,
-                message: "Invalid email address",
-              },
-            })}
+            error={f.error}
+            style={{ animationDelay: `${0.15 + i * 0.08}s` }}
+            className="animate-fade-slide-up"
+            {...f.reg}
           />
-          {errors.email && <p className="text-red-500 text-sm mt-1">{errors.email.message}</p>}
+        ))}
 
-          <InputBox
-            icon="fa-solid fa-lock"
-            type="password"
-            label="Password"
-            autoComplete="off"
-            {...register("password", { required: "Password is required" })}
-          />
-          {errors.password && <p className="text-red-500 text-sm mt-1">{errors.password.message}</p>}
+        <div
+          className="flex justify-between items-center text-white/50 text-xs animate-fade-slide-up"
+          style={{ animationDelay: '0.32s' }}
+        >
+          <label className="flex items-center gap-1.5 cursor-pointer">
+            <input type="checkbox" className="accent-amber-400" /> Remember me
+          </label>
+          <a href="#" className="hover:text-amber-400 transition-colors">Forgot password?</a>
+        </div>
 
-          <div className="flex justify-between mt-2 text-white text-sm">
-            <label>
-              <input type="checkbox" className="mr-1" /> Remember me
-            </label>
-            <a href="#" className="hover:underline">Forgot password?</a>
-          </div>
+        <button
+          type="submit"
+          disabled={loading}
+          style={{ animationDelay: '0.4s' }}
+          className={`group relative h-[44px] w-full rounded-xl font-semibold text-sm tracking-wide overflow-hidden
+            transition-all duration-200 flex items-center justify-center gap-2 animate-fade-slide-up
+            ${loading
+              ? "bg-white/10 text-white/40 cursor-not-allowed"
+              : "bg-amber-400 text-[#0B0F19] hover:bg-amber-300 active:scale-[0.99]"}
+          `}
+        >
+          {!loading && (
+            <span
+              className="absolute inset-0 bg-gradient-to-r from-transparent via-white/40 to-transparent
+                bg-[length:200%_100%] opacity-0 group-hover:opacity-100 group-hover:animate-shimmer"
+            />
+          )}
+          <span className="relative flex items-center gap-2">
+            {loading && <i className="fa-solid fa-circle-notch fa-spin"></i>}
+            {loading ? "Signing in..." : "Sign In"}
+          </span>
+        </button>
 
+        <p
+          className="text-white/40 text-sm text-center pt-1 animate-fade-slide-up"
+          style={{ animationDelay: '0.46s' }}
+        >
+          Don't have an account?{" "}
           <button
-            type="submit"
-            disabled={loading}
-            className={`mt-4 h-[30px] w-full rounded-2xl transition 
-              ${loading ? "bg-gray-500 cursor-not-allowed" : "bg-blue-600 hover:bg-blue-700"} text-white`}
+            type="button"
+            onClick={() => onswitch?.('signup')}
+            className="text-amber-400 font-semibold hover:underline"
           >
-            {loading ? "Loading..." : "Login"}
+            Sign up
           </button>
-
-          <p className="text-white text-sm text-center mt-2">
-            Don't have an account?
-            <button
-              type="button"
-              onClick={() => onswitch?.('signup')}
-              className="underline font-semibold ml-1 cursor-pointer"
-            >
-              Signup
-            </button>
-          </p>
-        </form>
-      </div>
+        </p>
+      </form>
     </section>
   );
 };

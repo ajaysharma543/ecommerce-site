@@ -1,1 +1,82 @@
 @import "tailwindcss";
+
+@theme {
+  --animate-fade-slide-up: fadeSlideUp 0.5s ease-out both;
+  --animate-slide-in-right: slideInRight 0.32s ease-out both;
+  --animate-slide-in-left: slideInLeft 0.32s ease-out both;
+  --animate-float-slow: floatSlow 8s ease-in-out infinite;
+  --animate-shimmer: shimmer 2.2s linear infinite;
+  --animate-shake: shake 0.4s ease-in-out;
+}
+
+@keyframes fadeSlideUp {
+  0%   { opacity: 0; transform: translateY(16px); }
+  100% { opacity: 1; transform: translateY(0); }
+}
+@keyframes slideInRight {
+  0%   { opacity: 0; transform: translateX(28px); }
+  100% { opacity: 1; transform: translateX(0); }
+}
+@keyframes slideInLeft {
+  0%   { opacity: 0; transform: translateX(-28px); }
+  100% { opacity: 1; transform: translateX(0); }
+}
+@keyframes floatSlow {
+  0%, 100% { transform: translate(0,0); }
+  50%      { transform: translate(14px,-18px); }
+}
+@keyframes shimmer {
+  0%   { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+@keyframes shake {
+  0%, 100%  { transform: translateX(0); }
+  20%, 60%  { transform: translateX(-6px); }
+  40%, 80%  { transform: translateX(6px); }
+}
+
+/* keep the autofill fix here too */
+input:-webkit-autofill,
+input:-webkit-autofill:hover,
+input:-webkit-autofill:focus,
+input:-webkit-autofill:active {
+  -webkit-box-shadow: 0 0 0 1000px #131826 inset !important;
+  -webkit-text-fill-color: #ffffff !important;
+  caret-color: #ffffff;
+  transition: background-color 9999s ease-in-out 0s;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+button:not(:disabled),
+[role="button"],
+label {
+  cursor: pointer;
+}
+
+button:disabled {
+  cursor: not-allowed;
+}
+@theme {
+  /* ...existing --animate-* entries... */
+  --animate-grid-pan: gridPan 22s linear infinite;
+  --animate-scan: scanLine 6s ease-in-out infinite;
+}
+
+@keyframes gridPan {
+  0%   { background-position: 0 0; }
+  100% { background-position: 60px 60px; }
+}
+
+@keyframes scanLine {
+  0%   { transform: translateY(-100%); opacity: 0; }
+  10%  { opacity: 0.5; }
+  50%  { opacity: 0.5; }
+  90%  { opacity: 0; }
+  100% { transform: translateY(100%); opacity: 0; }
+}

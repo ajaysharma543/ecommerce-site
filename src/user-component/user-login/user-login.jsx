@@ -8,6 +8,7 @@ import { setUser } from '../../store/auth';
 
 function Usersignup({ onswitch }) {
   const [error, setError] = useState('');
+  const [errorKey, setErrorKey] = useState(0);
   const [loading, setLoading] = useState(false);
 
   const navigate = useNavigate();
@@ -16,8 +17,16 @@ function Usersignup({ onswitch }) {
   const {
     register,
     handleSubmit,
+    watch,
     formState: { errors }
   } = useForm();
+
+  const password = watch("password");
+
+  const showError = (msg) => {
+    setError(msg);
+    setErrorKey((k) => k + 1);
+  };
 
   const onSubmit = async ({ name, email, password, phone }) => {
     setError('');
@@ -26,94 +35,140 @@ function Usersignup({ onswitch }) {
     try {
       const session = await authservice.Createuser({ name, email, password, phone });
 
-      if (session) {
-        const userData = await authservice.getCurrentUser();
-
-        if (userData) {
-          dispatch(setUser(userData));
-          navigate('/userlogin', { replace: true });
-        }
+      if (!session) {
+        showError("Signup failed. Please try again.");
+        return;
       }
+
+      const userData = await authservice.getCurrentUser();
+
+      if (!userData) {
+        showError("Account created, but we couldn't log you in automatically.");
+        return;
+      }
+
+      dispatch(setUser(userData));
+      navigate('/userlogin', { replace: true });
     } catch (err) {
-      setError(err?.message || 'Signup failed. Please try again.');
+      showError(err?.message || 'Signup failed. Please try again.');
     } finally {
       setLoading(false);
     }
   };
 
+  const fields = [
+    {
+      icon: "fa-solid fa-user", type: "text", label: "Full Name",
+      error: errors.name?.message,
+      reg: register("name", { required: "Name is required" }),
+    },
+    {
+      icon: "fa-solid fa-envelope", type: "email", label: "Email",
+      error: errors.email?.message,
+      reg: register("email", {
+        required: "Email is required",
+        pattern: {
+          value: /^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,3})+$/,
+          message: "Enter a valid email",
+        }
+      }),
+    },
+    {
+      icon: "fa-solid fa-phone", type: "tel", label: "Phone Number",
+      error: errors.phone?.message,
+      reg: register("phone", {
+        required: "Phone number is required",
+        pattern: { value: /^[0-9]{7,15}$/, message: "Enter a valid phone number" }
+      }),
+    },
+    {
+      icon: "fa-solid fa-lock", type: "password", label: "Password",
+      error: errors.password?.message,
+      reg: register("password", {
+        required: "Password is required",
+        minLength: { value: 6, message: "Minimum 6 characters" }
+      }),
+    },
+    {
+      icon: "fa-solid fa-lock", type: "password", label: "Confirm Password",
+      error: errors.confirmPassword?.message,
+      reg: register("confirmPassword", {
+        required: "Please confirm your password",
+        validate: (value) => value === password || "Passwords do not match"
+      }),
+    },
+  ];
+
   return (
-    <section className="flex items-center w-full justify-center">
-      <div className="w-[300px] border-2 px-4 py-6 my-20 rounded-2xl border-white">
-        <h2 className="text-2xl font-bold text-center text-white">Signup</h2>
+    <section className="w-full px-6 py-4">
+      <h2 className="text-xl font-bold text-white text-center mb-1 animate-fade-slide-up" style={{ animationDelay: '0.05s' }}>
+        Create account
+      </h2>
+      <p className="text-white/40 text-xs text-center mb-3 animate-fade-slide-up" style={{ animationDelay: '0.1s' }}>
+        Join in a few seconds
+      </p>
 
-        {error && <p className="text-red-500 mt-3 text-center">{error}</p>}
+      {error && (
+        <div
+          key={errorKey}
+          className="mb-4 rounded-lg border border-red-500/30 bg-red-500/10 px-3 py-2 animate-shake"
+        >
+          <p className="text-red-400 text-sm text-center">{error}</p>
+        </div>
+      )}
 
-        <form onSubmit={handleSubmit(onSubmit)} className="space-y-3 mt-4">
-
+      <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
+        {fields.map((f, i) => (
           <InputBox
-            icon="fa-solid fa-user"
-            type="text"
-            label="Full Name"
-            {...register("name", { required: "Name is required" })}
+            key={f.label}
+            icon={f.icon}
+            type={f.type}
+            label={f.label}
+            error={f.error}
+            style={{ animationDelay: `${0.15 + i * 0.07}s` }}
+            className="animate-fade-slide-up"
+            {...f.reg}
           />
-          {errors.name && <p className="text-red-400 text-xs">{errors.name.message}</p>}
+        ))}
 
-          <InputBox
-            icon="fa-solid fa-envelope"
-            type="email"
-            label="Email"
-            {...register("email", {
-              required: "Email is required",
-              pattern: {
-                value: /^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,3})+$/,
-                message: "Enter a valid email",
-              }
-            })}
-          />
-          {errors.email && <p className="text-red-400 text-xs">{errors.email.message}</p>}
+        <button
+          type="submit"
+          disabled={loading}
+          style={{ animationDelay: '0.55s' }}
+          className={`group relative h-[44px] w-full rounded-xl font-semibold text-sm tracking-wide overflow-hidden
+            transition-all duration-200 flex items-center justify-center gap-2 animate-fade-slide-up
+            ${loading
+              ? "bg-white/10 text-white/40 cursor-not-allowed"
+              : "bg-amber-400 text-[#0B0F19] hover:bg-amber-300 active:scale-[0.99]"}
+          `}
+        >
+          {!loading && (
+            <span
+              className="absolute inset-0 bg-gradient-to-r from-transparent via-white/40 to-transparent
+                bg-[length:200%_100%] opacity-0 group-hover:opacity-100 group-hover:animate-shimmer"
+            />
+          )}
+          <span className="relative flex items-center gap-2">
+            {loading && <i className="fa-solid fa-circle-notch fa-spin"></i>}
+            {loading ? "Creating account..." : "Sign Up"}
+          </span>
+        </button>
 
-          <InputBox
-            icon="fa-solid fa-phone"
-            type="number"
-            label="Phone Number"
-            {...register("phone", { required: "Phone number is required" })}
-          />
-          {errors.phone && <p className="text-red-400 text-xs">{errors.phone.message}</p>}
-
-          <InputBox
-            icon="fa-solid fa-lock"
-            type="password"
-            label="Password"
-            {...register("password", {
-              required: "Password is required",
-              minLength: { value: 6, message: "Minimum 6 characters" }
-            })}
-          />
-          {errors.password && <p className="text-red-400 text-xs">{errors.password.message}</p>}
-
+        <p
+          className="text-white/40 text-sm text-center pt-1 animate-fade-slide-up"
+          style={{ animationDelay: '0.62s' }}
+        >
+          Already have an account?{" "}
           <button
-            type="submit"
-            disabled={loading}
-            className={`mt-4 h-[35px] w-full rounded-2xl text-white font-semibold transition-all
-              ${loading ? "bg-gray-500 cursor-not-allowed" : "bg-blue-600 hover:bg-blue-700"}
-            `}
+            type="button"
+            onClick={() => onswitch?.('login')}
+            className="text-amber-400 font-semibold hover:underline"
           >
-            {loading ? "Loading..." : "Signup"}
+            Log in
           </button>
+        </p>
 
-          <p className="text-white text-sm text-center mt-2">
-            Already have an account?
-            <button
-              type="button"
-              onClick={() => onswitch?.('login')}
-              className="underline font-semibold ml-1 cursor-pointer"
-            >
-              Login
-            </button>
-          </p>
-
-        </form>
-      </div>
+      </form>
     </section>
   );
 }
